@@ -1,0 +1,7 @@
+.env
+.idea
+sourcefiles/mysql/
+client/vendor/
+service/vendor/
+service/var/
+*workspace

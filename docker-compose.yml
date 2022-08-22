@@ -1,0 +1,40 @@
+version: "3.1"
+services:
+  webserver:
+      image: nginx:alpine
+      container_name: ${PROJECT_NAME}-webserver
+      working_dir: /service
+      volumes:
+          - ./service:/service
+          - ./sourcefiles/nginx:/etc/nginx/conf.d
+      ports:
+        - "${NGINX_PORT}:80"
+      restart: always
+  php-fpm-service:
+      build: sourcefiles/php-fpm-service
+      container_name: ${PROJECT_NAME}-php-fpm-service
+      working_dir: /service
+      volumes:
+        - ./service:/service
+      restart: always
+  mysql8:
+      image: mysql:8
+      container_name: ${PROJECT_NAME}-mysql8
+      ports:
+          - "${MYSQL_PORT}:3306"
+      volumes:
+          - ./sourcefiles/mysql:/var/lib/mysql
+      command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      restart: always
+      environment:
+          MYSQL_ROOT_PASSWORD: serviceapp_pass
+          MYSQL_DATABASE: serviceapp_db
+          MYSQL_USER: serviceapp_user
+          MYSQL_PASSWORD: serviceapp_pass
+  php-fpm-client:
+      build: sourcefiles/php-fpm-client
+      container_name: ${PROJECT_NAME}-php-fpm-client
+      working_dir: /client
+      volumes:
+        - ./client:/client
+      restart: always
